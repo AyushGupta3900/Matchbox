@@ -1,0 +1,28 @@
+server:
+  port: ${SERVER_PORT:8081}     # 8080 is occupied by another local Docker container
+
+spring:
+  application:
+    name: matchbox
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5433/matchbox}
+    username: ${DB_USER:matchbox}
+    password: ${DB_PASSWORD:localdev}
+  jpa:
+    hibernate:
+      ddl-auto: validate          
+    open-in-view: false          
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info     
+  endpoint:
+    health:
+      show-details: when_authorized

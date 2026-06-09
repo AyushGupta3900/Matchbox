@@ -114,7 +114,7 @@ services:
       POSTGRES_USER: matchbox
       POSTGRES_PASSWORD: ${DB_PASSWORD:-localdev}   # from .env; dev fallback
     ports:
-      - "5432:5432"
+      - "5433:5432"     # host 5433 -> container 5432 (avoids clash with a local Postgres on 5432)
     volumes:
       - matchbox-pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -135,13 +135,16 @@ Stop: `docker compose down` (add `-v` to also wipe the volume).
 
 `src/main/resources/application.yml`:
 ```yaml
+server:
+  port: ${SERVER_PORT:8081}        # 8080 was taken by another local container; override-able
+
 spring:
   application:
     name: matchbox
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:dev}
   datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/matchbox}
+    url: ${DB_URL:jdbc:postgresql://localhost:5433/matchbox}
     username: ${DB_USER:matchbox}
     password: ${DB_PASSWORD:localdev}
   jpa:
@@ -220,7 +223,7 @@ docker compose up -d postgres-primary   # DB must be up (Flyway connects on boot
 ./mvnw spring-boot:run       # run the app
 
 # in another terminal:
-curl -i localhost:8080/actuator/health         # -> {"status":"UP"} (once DB reachable)
+curl -i localhost:8081/actuator/health         # -> {"status":"UP"} (once DB reachable)
 ```
 - App fails to start with "connection refused" → Postgres isn't up; start it first.
 - Health is `DOWN` → check `docker compose logs postgres-primary` and your datasource config.
@@ -281,6 +284,19 @@ public class DepositRequest {
 - **It hides what's generated.** While you're *learning*, occasionally let your IDE "show
   generated sources" (or de-Lombok one class) to see what it produced — so Lombok stays a
   convenience, not magic you can't reason about.
+
+## Troubleshooting (real issues we hit on this machine)
+
+| Symptom | Cause | Fix |
+|---------|-------|-----|
+| `FATAL: role "matchbox" does not exist` | a **local Homebrew Postgres** owns `:5432`, so the app connects to *it*, not the container (`localhost` resolves to `::1` first on macOS) | map the container to **5433** and point `DB_URL` at it (we did) — or `brew services stop postgresql@16` |
+| `Web server failed to start. Port 8080 was already in use` | another local **Docker container** holds `:8080` | set `server.port` (we use **8081**), or `SERVER_PORT=...` |
+| `Connection refused` on boot | Postgres container not up yet | `docker compose up -d postgres-primary` and wait for `healthy` before running |
+| IDE red-underlines Lombok methods | IDE annotation processing off / extension missing | install the VS Code Lombok extension; `./mvnw compile` is the source of truth |
+| `/ping` returns **401** | `starter-security` locks all endpoints by default | expected until step 0.4; use the generated password from the logs, or wait |
+
+> Lesson: when a port is taken by something you don't control, **sidestep it** (remap) rather
+> than fight it. Reproducible local setups assume nothing about what else is running.
 
 ## Common Maven commands (cheat sheet)
 | Command | Does |

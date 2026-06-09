@@ -1,0 +1,21 @@
+services:
+  postgres-primary:
+    image: postgres:16
+    container_name: matchbox-postgres
+    environment:
+      POSTGRES_DB: matchbox
+      POSTGRES_USER: matchbox
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-localdev}   # from .env; dev fallback
+    ports:
+      # host 5433 -> container 5432, to avoid clashing with a local Homebrew Postgres on 5432
+      - "5433:5432"
+    volumes:
+      - matchbox-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U matchbox -d matchbox"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  matchbox-pgdata:

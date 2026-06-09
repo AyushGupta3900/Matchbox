@@ -1,0 +1,7 @@
+logging:
+  level:
+    root: INFO
+    com.matchbox: DEBUG
+spring:
+  jpa:
+    show-sql: true                 
