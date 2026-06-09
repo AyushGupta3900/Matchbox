@@ -1,0 +1,28 @@
+# Java / Gradle / Maven
+target/
+build/
+.gradle/
+*.class
+*.jar
+!gradle/wrapper/gradle-wrapper.jar
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.settings/
+.classpath
+.project
+
+# OS
+.DS_Store
+
+# Env / secrets — never commit these
+.env
+.env.*
+!.env.example
+*.local
+
+# Logs
+logs/
+*.log
