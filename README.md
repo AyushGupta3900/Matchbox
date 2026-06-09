@@ -24,8 +24,8 @@ The full project brief lives in [STARTER.md](STARTER.md).
 
 ## Progress
 
-- [ ] **Design docs** (current phase) — requirements, data model, API, auth, architecture, NFRs, error/logging, migrations, config
-- [ ] Phase 0 — Skeleton + auth + wallet
+- [x] **Design docs** — requirements, data model, API, auth, architecture, NFRs, error/logging, migrations, config ✅
+- [ ] **Phase 0 — Skeleton + auth + wallet** (next — first code)
 - [ ] Phase 1 — Matching engine
 - [ ] Phase 2 — Event sourcing + CQRS
 - [ ] Phase 3 — Market data + WebSocket
