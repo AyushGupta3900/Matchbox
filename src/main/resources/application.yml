@@ -18,6 +18,12 @@ spring:
     enabled: true
     locations: classpath:db/migration
 
+matchbox:
+  jwt:
+    # HS256 requires a secret of at least 32 bytes. Real value comes from JWT_SIGNING_SECRET (doc 09).
+    secret: ${JWT_SIGNING_SECRET:dev-only-jwt-secret-change-me-min-32-bytes!!}
+    access-ttl: ${JWT_ACCESS_TTL:900}     # seconds
+
 management:
   endpoints:
     web:

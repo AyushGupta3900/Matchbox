@@ -70,6 +70,25 @@
 			<optional>true</optional>
 		</dependency>
 
+		<!-- JWT (jjwt) — issue/verify signed tokens. Version not managed by Boot, so pin it. -->
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-api</artifactId>
+			<version>0.12.6</version>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-impl</artifactId>
+			<version>0.12.6</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-jackson</artifactId>
+			<version>0.12.6</version>
+			<scope>runtime</scope>
+		</dependency>
+
 		<!-- JUnit 5, Mockito, MockMvc, AssertJ -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
