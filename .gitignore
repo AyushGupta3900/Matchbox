@@ -6,13 +6,14 @@ build/
 *.jar
 !gradle/wrapper/gradle-wrapper.jar
 
-# IDE
+# IDE / local agent config
 .idea/
 *.iml
 .vscode/
 .settings/
 .classpath
 .project
+.claude/
 
 # OS
 .DS_Store
