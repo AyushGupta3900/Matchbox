@@ -5,7 +5,8 @@ in-memory order-book design, single-writer/lock-free concurrency, event sourcing
 double-entry settlement, low-GC latency engineering, and percentile-driven observability.
 
 It is built **slowly and deliberately** — every phase intentionally creates a problem that a
-later phase's tooling exists to solve. The full design brief is in [STARTER.md](STARTER.md).
+later phase's tooling exists to solve. The design docs live in [docs/](docs/) and the backend
+concepts behind each step in [concepts/](concepts/).
 
 > **Status:** Phase 0 complete — the app boots, supports JWT register/login, and processes
 > deposits through a double-entry ledger that always balances to zero.
@@ -37,27 +38,35 @@ swapping in-process calls for a queue.
 
 ### Target architecture (Phases 3–6)
 
-```
-            ┌─────────────┐     signed REST / WebSocket
-   client ──▶  Gateway    │  (auth, rate limit, pre-trade risk)
-            └──────┬──────┘
-                   │ command (validated, balance-reserved)
-                   ▼
-            ┌─────────────┐     append-only
-            │  Sequencer  │────────────────────┐
-            └──────┬──────┘                     ▼
-                   │ ordered commands     ┌───────────┐
-                   ▼                       │  Kafka    │  event log (source of truth)
-        ┌────────────────────┐  events    │ (topics)  │
-        │  Matching Engine   │───────────▶└─────┬─────┘
-        │  single-writer,    │                  │
-        │  in-memory book    │     ┌────────────┼─────────────┬──────────────┐
-        └────────────────────┘     ▼            ▼             ▼              ▼
-                              ┌──────────┐ ┌──────────┐ ┌────────────┐ ┌────────────┐
-                              │Settlement│ │ Market   │ │Surveillance│ │ Analytics  │
-                              │  ledger  │ │  data /  │ │  / risk    │ │  candles / │
-                              │(Postgres)│ │ WS + Redis│ │            │ │ OLAP store │
-                              └──────────┘ └──────────┘ └────────────┘ └────────────┘
+```mermaid
+flowchart TB
+    client["Client<br/>(signed REST / WebSocket)"]
+
+    subgraph edge["Gateway"]
+        gw["auth · rate limit · pre-trade risk"]
+    end
+
+    subgraph engine["Matching Engine (single-writer, in-memory book)"]
+        seq["Sequencer<br/>(monotonic seq)"]
+        book["Order book"]
+        seq --> book
+    end
+
+    kafka{{"Kafka — event log (source of truth)<br/>append-only, ordered, replayable"}}
+
+    settle[("Settlement ledger<br/>(Postgres)")]
+    md["Market data<br/>depth/trades · WS · Redis"]
+    surv["Surveillance / risk"]
+    olap[("Analytics<br/>candles / OLAP")]
+
+    client -->|"command (validated, balance-reserved)"| gw
+    gw -->|ordered commands| seq
+    book -->|events| kafka
+    kafka --> settle
+    kafka --> md
+    kafka --> surv
+    kafka --> olap
+    md -->|live depth/trades| client
 ```
 
 **Data flow:** a command is authenticated, risk-checked, and has funds reserved at the gateway;
@@ -234,13 +243,12 @@ This repo is also a structured learning log. Alongside the source code:
 | [`docs/`](docs/) | design docs for *our* exchange — requirements, data model, API contract, auth, architecture, NFRs |
 | [`concepts/`](concepts/) | one file per backend **concept**, explained with the *why* — read before building the thing that uses it |
 | [`syntax/`](syntax/) | "how do I express X in Java/Spring/SQL?" — syntax references and isolated snippets, **not** project code |
-| [`STARTER.md`](STARTER.md) | the full project brief, roadmap, and pitfalls |
 
 ---
 
 ## Roadmap
 
-Each phase: **Build / Learn / Done when** (details in [STARTER.md](STARTER.md)).
+Each phase: **Build / Learn / Done when**.
 
 - [x] **Phase 0 — Skeleton + auth + wallet** — boots, JWT register/login, deposit, double-entry ledger balances to zero ✅
 - [ ] **Phase 1 — Matching engine** — in-memory order book, price-time priority, LIMIT/MARKET/IOC/FOK, balance reservation; deterministic replay test

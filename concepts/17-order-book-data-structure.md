@@ -59,7 +59,7 @@ incoming order always matches starting from the *front* (the best price) of the 
   the first/last key** (`firstKey`/`lastKey`) — that's your best price.
 - Bids use **descending** order, asks **ascending**, so the best is always `firstEntry()`.
 
-> STARTER's advice: *"TreeMap to start; profile, then consider an array price-ladder for the hot
+> The brief's advice: *"TreeMap to start; profile, then consider an array price-ladder for the hot
 > range once you measure."* That's the **profile-first** rule — we start simple and correct,
 > and only specialize the data structure after we *measure* a bottleneck (Phase 5). Don't
 > pre-optimize.

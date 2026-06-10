@@ -96,7 +96,7 @@ If any of these come back, they re-enter through *this doc* first.
 
 ## 5. v1 definition of done (the spine)
 
-v1 = **Phases 0–2** of [STARTER.md](../STARTER.md):
+v1 = **Phases 0–2** of the [roadmap](../README.md#roadmap):
 
 1. A user can register, deposit, and the ledger balances to zero. *(FR-1…FR-5)*
 2. A user can place LIMIT/MARKET/IOC/FOK orders on one symbol; crossing orders match by
@@ -107,7 +107,7 @@ v1 = **Phases 0–2** of [STARTER.md](../STARTER.md):
    state; settlement is a projection. *(FR-16…FR-19)*
 
 Phases 3–6 (market data, concurrency, latency, observability) are **post-v1** and each has
-its own "done when" in STARTER.md.
+its own "done when" in the [roadmap](../README.md#roadmap).
 
 ## 6. Key constraints & assumptions (these shape everything downstream)
 

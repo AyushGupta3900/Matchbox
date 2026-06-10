@@ -62,6 +62,6 @@ stops you from designing one-size-fits-nobody interfaces.
 
 ## For our exchange
 
-The brief ([STARTER.md](../STARTER.md)) already implies the requirements — our job is to
+The project brief (now folded into the [README](../README.md)) already implies the requirements — our job is to
 make them explicit, numbered, and scoped into "v1 vs later." See
 [docs/01-requirements-and-scope.md](../docs/01-requirements-and-scope.md).
