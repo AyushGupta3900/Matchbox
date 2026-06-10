@@ -27,3 +27,7 @@ build/
 # Logs
 logs/
 *.log
+
+# Generated / scratch docs (not part of the repo)
+HELP.md
+INFO.md
